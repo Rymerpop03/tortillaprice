@@ -1,0 +1,209 @@
+---
+title: "Activity10"
+subtitle: "This document contains activity 10, questions 1, 2, and 3."
+author: "Rymer Popovich"
+date: "2024-11-18"
+format: html
+editor: visual
+self-contained: true
+---
+
+## Activity 10
+
+# **Question 1:**
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(palmerpenguins)
+library(ggplot2)
+library(rmarkdown)
+library(knitr)
+```
+
+```{r}
+#| echo: false
+
+myFunction <- function(x){
+  y <- (cos(4*x) + tan(0.5*x))^4
+  return(y)
+}
+
+ggplot() +
+  stat_function(
+    fun = myFunction,
+    xlim = c(0, 1),
+    n = 1000
+  ) +
+  theme_bw() +
+  labs(
+    x = "x",
+    y = "h(x)"
+  )
+```
+
+# **Question 2:**
+
+```{r}
+#| labal: load-packages
+#| include: true
+
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+
+cut_data <- diamonds %>%
+  count(cut) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+ggplot(cut_data, aes(x = "", y = percentage, fill = cut)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y") +
+  labs(title = "Distribution of Diamond Cuts", fill = "Cut Quality") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            color = "black", size = 4) +
+  theme_void() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    legend.title = element_text(size = 12)
+  ) +
+  scale_fill_brewer(palette = "Set3")
+```
+
+# **Question 3:**
+
+```{r}
+#| echo: true
+#| eval: true
+#Load the library
+library(readr)
+library(dplyr)
+tortilla_data <- read_csv("tortilla_data.csv")
+```
+
+# Part (a)
+
+```{r}
+#| echo: true
+#| eval: true
+#filter the year to 2007 and summarise the average price
+average_price_2007 <- tortilla_data %>%
+  filter(year == 2007) %>%
+  summarise(AveragePrice = mean(price, na.rm = TRUE))
+
+average_price_2007
+```
+
+# Part (b)
+
+```{r}
+#| echo: true
+#| eval: true
+#filter the year to 2024 and summarise the average price
+average_price_2024 <- tortilla_data %>%
+  filter(year == 2024) %>%
+  summarise(AveragePrice = mean(price, na.rm = TRUE))
+
+average_price_2024
+```
+
+# Part (c)
+
+```{r}
+#| echo: true
+#| eval: true
+#divide the average price from 2007 by the average price from 2024 and multiply by 100 to get the percentage increase. 
+percent_change <- (average_price_2024 / average_price_2007) *100
+
+print(paste("Percentage Change: ", round(percent_change, 2), "%"))
+```
+
+# Part (d)
+
+```{r}
+#| echo: true
+#| eval: true'
+# Find each years average price and then plot it into a line plot
+average_price_data <- tortilla_data %>%
+  group_by(year) %>%
+  summarise(average_price = mean(price, na.rm = TRUE))
+
+ggplot(average_price_data, aes(x = year, y = average_price)) +
+  geom_line(color = "blue", linewidth = 1) +
+  geom_point(color = "red") +
+  labs(title = "Average Price of Tortillas Across All States (2007-2024)", 
+       x = "Year", 
+       y = "Average Price (USD)") +
+  theme_minimal()
+```
+
+# Part (e)
+
+```{r}
+#| echo: true
+#| eval: true
+# Find the summary of the 2016 sales stats and plot them into a boxplot grouped by each state
+tortilla_2016 <- tortilla_data %>%
+  filter(year == 2016)
+
+summary_stats_2016 <- tortilla_2016 %>%
+  group_by(state) %>%
+  summarise(
+    average_price = mean(price, na.rm = TRUE),
+    min_price = min(price, na.rm = TRUE),
+    max_price = max(price, na.rm = TRUE),
+    median_price = median(price, na.rm = TRUE),
+    sd_price = sd(price, na.rm = TRUE)
+  )
+
+ggplot(tortilla_2016, aes(x = state, y = price, fill = state)) +
+  geom_boxplot() +
+  labs(title = "Boxplots of Tortilla Prices by State in 2016", 
+       x = "State", 
+       y = "Price of Tortillas (USD)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set3") +
+  theme(legend.position = "none") +
+  labs(caption = "This figure shows the distribution of tortilla prices in each state for 2016.")
+```
+
+# Part (f)
+
+```{r}
+#| echo: true
+#| eval: true
+# Find the data from the nuevoleon state only and plot them grouped by big corporations and small corporations
+nuevo_leon_data <- tortilla_data %>%
+  filter(state == "NuevoLeon")
+
+ggplot(nuevo_leon_data, aes(x = year, y = price, color = storeType)) +
+  geom_line(linewidth = 1) +
+  geom_point(linewidth = 2) +
+  labs(
+    title = "Price of Tortillas in Nuevo León (2007-2024) by Store Type", 
+    x = "Year", 
+    y = "Price of Tortillas (USD)",
+    caption = "This plot shows the price of tortillas in Nuevo León from 2007 to 2024, broken down by store type (small businesses vs. large corporations)."
+  ) +
+  scale_color_manual(values = c("Mom and Pop Store" = "blue", "Big Retail Store" = "red")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+```
+
+# Part (g)
+
+Picture is taken from <https://cooking.nytimes.com/recipes/1025834-flour-tortillas-with-honey-and-butter>
+
+![](tortilla.jpg)
+
+---
+footer: "Rick Chavelas via Kaggle at https://www.kaggle.com/datasets/richave/tortilla-prices-in-mexico"
+---
